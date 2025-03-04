@@ -1,0 +1,29 @@
+{{- range $namespace, $data := .Values.namespaces }}
+{{- range $key, $app := $data.apps }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pz-ingress-{{ $app.name }}
+  namespace: {{ $namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "{{ $app.ingressHost }}"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: pz-lb-service-{{ $app.name }}
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - "{{ $app.ingressHost }}"
+    secretName: {{ $app.tlsSecret }}
+{{- end }}
+{{- end }}
