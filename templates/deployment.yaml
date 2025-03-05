@@ -1,14 +1,13 @@
-{{- range .Values.namespaces }}
-{{- range .apps }}
+{{- range .Values.apps }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ $.name }}
+  namespace: {{ .namespaces }}
   name: {{ .name }}
   labels:
     app: {{ .name }}
 spec:
-  replicas: 1
+  replicas: {{ .replicas }}
   selector:
     matchLabels:
       app: {{ .name }}
@@ -18,7 +17,7 @@ spec:
         app: {{ .name }}
     spec:
       imagePullSecrets:
-        - name: acr-pull-secret
+        - name: {{ .imagePullSecrets.name }}
       containers:
         - name: {{ .name }}
           image: "{{ .image }}"
@@ -35,5 +34,4 @@ spec:
               cpu: {{ .resources.limits.cpu }}
               memory: {{ .resources.limits.memory }}
 ---
-{{- end }}
 {{- end }}
