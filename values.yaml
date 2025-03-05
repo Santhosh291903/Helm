@@ -1,43 +1,53 @@
 namespaces:
-  dev-environment:
+  - name: new-dev-api
     apps:
-      service1:
-        name: app-service-1
-        image: myrepo.azurecr.io/app-service-1:2025.01.02-17.24.31
-        port: 5001
-        replicas: 1
-        configMapRef: configmap-service-1
-        ingressHost: app-service-1.mydomain.com
-        tlsSecret: tls-secret-service-1
-
-      service2:
-        name: app-service-2
-        image: myrepo.azurecr.io/app-service-2:2025.01.02-17.24.31
-        port: 5002
-        replicas: 1
-        configMapRef: configmap-service-2
-        ingressHost: app-service-2.mydomain.com
-        tlsSecret: tls-secret-service-2
-
-  test-environment:
+      - name: finance-ms
+        image: newrepo.azurecr.io/finance-ms:Version-2025.02.10-12.45.00-Release
+        port: 6004
+        configMapRef: new-finance-api-configmap
+        resources:
+          requests:
+            cpu: "300m"
+            memory: "512Mi"
+          limits:
+            cpu: "600m"
+            memory: "1Gi"
+        autoscaling:
+          minReplicas: 3
+          maxReplicas: 12
+          targetCPUUtilizationPercentage: 65
+          targetMemoryUtilizationPercentage: 75
+      - name: payments-ms
+        image: newrepo.azurecr.io/payments-ms:stable
+        port: 6005
+        configMapRef: new-payments-api-configmap
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+        autoscaling:
+          minReplicas: 2
+          maxReplicas: 7
+          targetCPUUtilizationPercentage: 70
+          targetMemoryUtilizationPercentage: 80
+  - name: new-prod-api
     apps:
-      service1:
-        name: app-service-3
-        image: myrepo.azurecr.io/app-service-3:2025.01.02-17.24.31
-        port: 5003
-        replicas: 1
-        configMapRef: configmap-service-3
-        ingressHost: app-service-3.mydomain.com
-        tlsSecret: tls-secret-service-3
-
-      service2:
-        name: app-service-4
-        image: myrepo.azurecr.io/app-service-4:2025.01.02-17.24.31
-        port: 5004
-        replicas: 1
-        configMapRef: configmap-service-4
-        ingressHost: app-service-4.mydomain.com
-        tlsSecret: tls-secret-service-4
-
-
-  # Add other namespaces & apps...
+      - name: finance-ms
+        image: newprodrepo.azurecr.io/finance-ms:stable
+        port: 6004
+        configMapRef: new-finance-api-configmap
+        resources:
+          requests:
+            cpu: "600m"
+            memory: "1Gi"
+          limits:
+            cpu: "1200m"
+            memory: "2Gi"
+        autoscaling:
+          minReplicas: 4
+          maxReplicas: 18
+          targetCPUUtilizationPercentage: 60
+          targetMemoryUtilizationPercentage: 70
