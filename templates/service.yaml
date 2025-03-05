@@ -1,17 +1,17 @@
-{{- range $namespace, $data := .Values.namespaces }}
-{{- range $key, $app := $data.apps }}
----
+{{- range .Values.namespaces }}
+{{- range .apps }}
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: {{ $namespace }}
-  name: pz-lb-service-{{ $app.name }}
+  namespace: {{ $.name }}
+  name: pz-lb-service-{{ .name }}
 spec:
   type: ClusterIP
   ports:
     - port: 80
-      targetPort: {{ $app.port }}
+      targetPort: {{ .port }}
   selector:
-    app: {{ $app.name }}
+    app: {{ .name }}
+---
 {{- end }}
 {{- end }}
