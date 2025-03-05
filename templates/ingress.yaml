@@ -1,29 +1,30 @@
-{{- range $namespace, $data := .Values.namespaces }}
-{{- range $key, $app := $data.apps }}
----
+{{- range .Values.namespaces }}
+{{- range .apps }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pz-ingress-{{ $app.name }}
-  namespace: {{ $namespace }}
+  name: pz-dev-ingress-{{ .name }}
+  namespace: {{ $.name }}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/issuer-certificate-renewal: "true"
 spec:
   ingressClassName: nginx
   rules:
-  - host: "{{ $app.ingressHost }}"
+  - host: "{{ .name }}-api.icaniotech.com"
     http:
       paths:
       - path: "/"
         pathType: Prefix
         backend:
           service:
-            name: pz-lb-service-{{ $app.name }}
+            name: pz-lb-service-{{ .name }}
             port:
               number: 80
   tls:
   - hosts:
-    - "{{ $app.ingressHost }}"
-    secretName: {{ $app.tlsSecret }}
+    - "{{ .name }}-api.icaniotech.com"
+    secretName: pz-dev-tls-secret-{{ .name }}
+---
 {{- end }}
 {{- end }}
