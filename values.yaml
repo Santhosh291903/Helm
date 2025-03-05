@@ -1,7 +1,6 @@
-namespaces:
-  - name: new-dev-api
     apps:
       - name: finance-ms
+        namespaces :  namespaces
         image: newrepo.azurecr.io/finance-ms:Version-2025.02.10-12.45.00-Release
         port: 6004
         configMapRef: new-finance-api-configmap
