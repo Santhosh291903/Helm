@@ -1,32 +1,39 @@
-{{- range $namespace, $data := .Values.namespaces }}
-{{- range $key, $app := $data.apps }}
----
+{{- range .Values.namespaces }}
+{{- range .apps }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ $namespace }}
-  name: {{ $app.name }}
+  namespace: {{ $.name }}
+  name: {{ .name }}
   labels:
-    app: {{ $app.name }}
+    app: {{ .name }}
 spec:
-  replicas: {{ $app.replicas }}
+  replicas: 1
   selector:
     matchLabels:
-      app: {{ $app.name }}
+      app: {{ .name }}
   template:
     metadata:
       labels:
-        app: {{ $app.name }}
+        app: {{ .name }}
     spec:
       imagePullSecrets:
         - name: acr-pull-secret
       containers:
-        - name: {{ $app.name }}
-          image: "{{ $app.image }}"
+        - name: {{ .name }}
+          image: "{{ .image }}"
           ports:
-            - containerPort: {{ $app.port }}
+            - containerPort: {{ .port }}
           envFrom:
             - configMapRef:
-                name: {{ $app.configMapRef }}
+                name: {{ .configMapRef }}
+          resources:
+            requests:
+              cpu: {{ .resources.requests.cpu }}
+              memory: {{ .resources.requests.memory }}
+            limits:
+              cpu: {{ .resources.limits.cpu }}
+              memory: {{ .resources.limits.memory }}
+---
 {{- end }}
 {{- end }}
